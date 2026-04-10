@@ -22,8 +22,8 @@ const int BTN_PIN_Y = 21;
 const int LED_PIN_R = 5;
 const int LED_PIN_Y = 10;
 QueueHandle_t xQueueButId;
-SemaphoreHandle_t xSemaphore_r;
-SemaphoreHandle_t xSemaphore_y;
+SemaphoreHandle_t xSemaphoreLedR;
+SemaphoreHandle_t xSemaphoreLedY;
 
 void btn_callback(uint gpio, uint32_t events)
 {
@@ -62,12 +62,12 @@ void btn_task(void *p)
             if (id == 1)
             {
                 // printf("veremelho \n");
-                xSemaphoreGive(xSemaphore_r);
+                xSemaphoreGive(xSemaphoreLedR);
             }
             else if (id == 2)
             {
                 // printf("amarelo \n");
-                xSemaphoreGive(xSemaphore_y);
+                xSemaphoreGive(xSemaphoreLedY);
 
             }
         }
@@ -80,7 +80,7 @@ void led_r_task(void *p){
     int led_pode = 0;
     int led_status = 0;
     while(1){
-        if(xSemaphoreTake(xSemaphore_r,pdMS_TO_TICKS(500))==pdTRUE){
+        if(xSemaphoreTake(xSemaphoreLedR,pdMS_TO_TICKS(500))==pdTRUE){
             led_pode = !led_pode;
             if(!led_pode){
                 led_status =0;
@@ -100,7 +100,7 @@ void led_y_task(void *p){
     int led_pode = 0;
     int led_status = 0;
     while(1){
-        if(xSemaphoreTake(xSemaphore_y,pdMS_TO_TICKS(500))==pdTRUE){
+        if(xSemaphoreTake(xSemaphoreLedY,pdMS_TO_TICKS(500))==pdTRUE){
             led_pode = !led_pode;
             if(!led_pode){
                 led_status =0;
@@ -118,8 +118,8 @@ int main()
 {
     stdio_init_all();
     xQueueButId = xQueueCreate(32, sizeof(int));
-    xSemaphore_r = xSemaphoreCreateBinary();
-    xSemaphore_y = xSemaphoreCreateBinary();
+    xSemaphoreLedR = xSemaphoreCreateBinary();
+    xSemaphoreLedY = xSemaphoreCreateBinary();
     xTaskCreate(btn_task, "BTN_Task 1", 256, NULL, 1, NULL);
     xTaskCreate(led_r_task, "Led_r_Task", 256, NULL, 1, NULL);
     xTaskCreate(led_y_task, "Led_y_Task", 256, NULL, 1, NULL);

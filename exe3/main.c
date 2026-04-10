@@ -82,6 +82,7 @@ void btn_2_task(void *p) {
     gpio_set_dir(BTN_PIN_G, GPIO_IN);
     gpio_pull_up(BTN_PIN_G);
 
+    
     int delay = 0;
     while (true) {
         if (!gpio_get(BTN_PIN_G)) {
