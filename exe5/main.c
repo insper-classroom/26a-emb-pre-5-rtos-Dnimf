@@ -21,7 +21,7 @@ const int BTN_PIN_Y = 21;
 
 const int LED_PIN_R = 5;
 const int LED_PIN_Y = 10;
-QueueHandle_t xQueueButId;
+QueueHandle_t xQueueBtn;
 SemaphoreHandle_t xSemaphoreLedR;
 SemaphoreHandle_t xSemaphoreLedY;
 
@@ -32,11 +32,11 @@ void btn_callback(uint gpio, uint32_t events)
 
     if (gpio == BTN_PIN_R)
     {
-        xQueueSendFromISR(xQueueButId, &id, 0);
+        xQueueSendFromISR(xQueueBtn, &id, 0);
     }
     if (gpio == BTN_PIN_Y)
     {
-        xQueueSendFromISR(xQueueButId, &id_1, 0);
+        xQueueSendFromISR(xQueueBtn, &id_1, 0);
     }
 }
 void btn_task(void *p)
@@ -57,7 +57,7 @@ void btn_task(void *p)
     {
         int id = 0;
 
-        if (xQueueReceive(xQueueButId, &id, 0))
+        if (xQueueReceive(xQueueBtn, &id, 0))
         {
             if (id == 1)
             {
@@ -117,7 +117,7 @@ void led_y_task(void *p){
 int main()
 {
     stdio_init_all();
-    xQueueButId = xQueueCreate(32, sizeof(int));
+    xQueueBtn = xQueueCreate(32, sizeof(int));
     xSemaphoreLedR = xSemaphoreCreateBinary();
     xSemaphoreLedY = xSemaphoreCreateBinary();
     xTaskCreate(btn_task, "BTN_Task 1", 256, NULL, 1, NULL);
